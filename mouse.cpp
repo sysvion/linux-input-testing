@@ -23,7 +23,7 @@ void print_event_details(struct input_event *data ) {
 
 
 std::set<int> keys = std::set<int>();
-std::set<int> unhandeld_event;
+std::set<int> unhandeld_events;
 int fp = 0;
 
 void sigint_handeler(int signal) {
@@ -33,6 +33,14 @@ void sigint_handeler(int signal) {
         for (int i : keys ) {
             std::cout << i << std::endl; 
         }
+
+        std::cout << std::endl << std::endl
+            << "unhandeld events: " << std::endl;
+
+        for (int i : unhandeld_events ) {
+            std::cout << i << std::endl; 
+        }
+
     } catch (int er) {}
     exit(0);
 }
@@ -55,15 +63,11 @@ int main(int argc, char **argv) {
 
         char buff[sizeof(struct input_event)];
         int err = read(fp, buff, sizeof(struct input_event));
-
-
         if (err == -1) {
             std::puts("I/O error when reading");
             break;
         }
-
         struct input_event *incoming = (struct input_event *) buff;
-
 
         if (incoming->type == EV_REL ) {
             continue;
@@ -71,9 +75,6 @@ int main(int argc, char **argv) {
 
         std::cout << "time: " << incoming->time.tv_sec << std::endl;
         switch (incoming->type) {
-            case EV_SYN:
-                // only report... continue...
-                break;
             case  EV_KEY:
                 std::cout << "EV_KEY:" << incoming->value << std::endl;
                 print_event_details(incoming);
@@ -83,9 +84,17 @@ int main(int argc, char **argv) {
                 // 330
                 // 333
                 // 334
+
+            case EV_SW:
+                // binary values... okay fair
+                break;
+
                 break;
             case  EV_REL:
-                // i currently only use relative.
+                // i currently only use absolute.
+
+            case EV_SYN:
+                // NAH.
                 
                 break;
             case  EV_ABS:
@@ -113,56 +122,13 @@ int main(int argc, char **argv) {
                         break;
                 }
                 break;
-            case  EV_MSC:
-                std::cout << "EV_MSC" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_SW:
-                std::cout << "EV_SW" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_LED:
-                std::cout << "EV_LED" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_SND:
-                std::cout << "EV_SND" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_REP:
-                std::cout << "EV_REP" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_FF:
-                std::cout << "EV_FF" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_PWR:
-                std::cout << "EV_PWR" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_FF_STATUS:
-                std::cout << "EV_FF_STATUS" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_MAX:
-                std::cout << "EV_MAX" << std::endl;
-                print_event_details(incoming);
-                break;
-            case  EV_CNT:
-                std::cout << "EV_CNT" << std::endl;
-                print_event_details(incoming);
-                break;
-            default:
-                unhandeld_event.insert(incoming->code);
-                break;
-                
 
+            default:
+                unhandeld_events.insert(incoming->code);
+                break;
         }
 
          std::cout << std::endl;
-    
-
     }
 
     sigint_handeler(0);
