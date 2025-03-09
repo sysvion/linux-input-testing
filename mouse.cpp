@@ -23,7 +23,7 @@ void print_event_details(struct input_event *data ) {
 
 
 std::set<int> keys = std::set<int>();
-std::set<std::complex<int>> unhandeld_event;
+std::set<int> unhandeld_event;
 int fp = 0;
 
 void sigint_handeler(int signal) {
