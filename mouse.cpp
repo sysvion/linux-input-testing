@@ -1,5 +1,4 @@
 // Datastructs
-#include <complex>
 #include <set>
 
 #include <csignal> // for ctrl-c
